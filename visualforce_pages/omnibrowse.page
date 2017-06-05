@@ -1,0 +1,94 @@
+<apex:page StandardController="Contact" id="thePage" extensions="OmniBrowseControllerExtension">
+  <apex:pageBlock title="OmniBrowse by SaleMove"> 
+  </apex:pageBlock>
+  <script>
+    /*
+      All this code should be a static file and injected dynamically here so we can
+      do changes without having to update the SalesForce application
+    */
+
+    function startOmniBrowse(authToken, omniBrowseEndPoint, siteId, visitorCode, cb){
+    
+      var config = {
+        id: (visitorCode == '' ? 'dummy' : visitorCode),
+        token: authToken, 
+        omniBrowseEndPoint: omniBrowseEndPoint,
+        siteId: siteId,
+        idType: (visitorCode == '' ? 'visit_id' : 'external_id')
+      };
+      launch(config, function(url){
+        cb(url);
+      });
+    }
+          
+    function launch(config, cb) {    
+      fetchLaunchToken(config, function(launchToken) {
+        isVisitorOnline(config, function(isOnline) {
+         if (isOnline) {
+           var url = config.omniBrowseEndPoint + '/auth/' + launchToken + '/' + config.siteId + '/' + config.idType + '/' + config.id;
+           cb(url);
+         }
+         else{
+           var url = config.omniBrowseEndPoint + '/auth/' + launchToken + '/' + config.siteId + '?error=""';      
+           cb(url);
+         }
+        });
+      });
+    }
+    
+    function active_visitors(visitors){
+      return visitors.map(function(visitor){
+        if (!!visitor.active_visit && !!visitor.active_visit.id){
+          return visitor;
+        }
+      });
+    }
+    
+    function isVisitorOnline(config, callback){
+      var req = new XMLHttpRequest();
+      req.onreadystatechange = function () {
+        if (this.readyState === 4 && this.status === 200) {
+          var visitors = JSON.parse(this.responseText);
+          callback(active_visitors(visitors).length > 0);
+        }
+      };
+      req.open("GET", config.omniBrowseEndPoint + "/sites/" + config.siteId + "/visitors?external_id=" + config.id, true);
+      req.setRequestHeader('Authorization', 'Token ' + config.token);
+      req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      req.send();
+    }   
+    
+    function fetchLaunchToken(config, callback) {
+      var req = new XMLHttpRequest();
+      req.onreadystatechange = function () {
+        if (this.readyState === 4 && this.status === 200) {
+          callback(JSON.parse(this.responseText).launch_token);
+        }
+      };
+      req.open("POST", config.omniBrowseEndPoint + "/auth/token", true);
+      req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      req.send(getLaunchTokenRequestBody(config.token));
+    }
+    
+    function getLaunchTokenRequestBody(apiToken) {
+      return 'api_token=' + apiToken;
+    }      
+    
+  </script>
+  <form>
+  <input type="hidden" name="OBExternalId" id="OBExternalId" value="{!ExternalIdValue}"></input>
+  </form>
+
+  <apex:outputPanel layout="block">
+      <apex:iframe src="" scrolling="true" id="obIframe" height="1200px" width="100%" html-sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-pointer-lock allow-top-navigation"/>
+  </apex:outputPanel>
+  <script> 
+    var token = new String('{!JSENCODE($User.salemove__SMToken__c)}');
+    var siteId = new String('{!JSENCODE($User.salemove__OmniBrowseSiteID__c)}');
+    var contactEmail = document.getElementById('OBExternalId').value;
+    startOmniBrowse(token.valueOf(), 'https://omnibrowse.salemove.com',siteId.valueOf(), contactEmail.valueOf(), function(url){
+      iframe = document.getElementById("obIframe");
+      iframe.src = url;
+    });
+  </script>
+</apex:page>
