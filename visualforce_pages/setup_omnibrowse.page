@@ -1,56 +1,74 @@
-<apex:page standardController="User" recordSetVar="users">
-  <script>
-    function setSiteIds(obSiteElementId){
-      var obSite = document.getElementById(obSiteElementId);
-      var elements = document.querySelectorAll('[data=site_id]')   
-      Array.from(elements).map(function(v){
-          v.value = obSite.value;
-     });
-    }
-    
-    function setExternalIDFieldName(obExternalIDFieldNameID){
-      var obExternalIdFieldName = document.getElementById(obExternalIDFieldNameID);
-      var elements = document.querySelectorAll('[data=external_id_field_name]')   
-      Array.from(elements).map(function(v){
-        v.value = obExternalIdFieldName.value;
-     });
-    }
-  </script>
-  
-  <apex:form >
-      <apex:pageBlock title="Hello {!$User.FirstName}!">
-      OmniBrowse Site ID. 
-     <p/>
-     <apex:inputField id="OBSite" html-size="36" value="{!user.OmniBrowseSiteID__c}"/> 
-     <p/>
-     <apex:commandButton onclick="setSiteIds('{!$Component.OBSite}'); return false;" value="Set Site ID" id="setSiteId" />
-     <p/>
-     <apex:inputField id="OBExternalIDFieldName" html-size="50" value="{!user.ExternalIDFieldName__c}"/> 
-     <p/>
-     <apex:commandButton onclick="setExternalIDFieldName('{!$Component.OBExternalIDFieldName}'); return false;" value="Set External ID Field Name" id="setExternalIDFieldName" />
-     </apex:pageBlock>
-  </apex:form>
-  
-  <apex:pageBlock title="Operators' Configurations">
+<apex:page standardController="User" recordSetVar="users" extensions="OmniBrowseSetupExtension">
+    <script>
+      function setSiteIds(obSiteElementId){
+        var obSite = document.getElementById(obSiteElementId);
+        var elements = document.querySelectorAll('[data=site_id]')
+        Array.from(elements).map(function(v){
+            v.value = obSite.value;
+       });
+      }
+
+      function setExternalIDFieldName(obExternalIDFieldNameID){
+        var obExternalIdFieldName = document.getElementById(obExternalIDFieldNameID);
+        var elements = document.querySelectorAll('[data=external_id_field_name]')
+        Array.from(elements).map(function(v){
+            v.value = obExternalIdFieldName.value;
+       });
+      }
+
+      function setOmniBrowseModelName(omniBrowseModelNameId){
+        var omnibrowseModelNameInput = document.getElementById(omniBrowseModelNameId);
+        var elements = document.querySelectorAll('[data=omnibrowse_model_name]')
+        Array.from(elements).map(function(v){
+            v.value = omnibrowseModelNameInput.value;
+       });
+      }
+    </script>
+
     <apex:form >
-      <apex:pageBlock >
-      <apex:pageMessages />
-      <apex:pageBlockButtons >
-      <apex:commandButton value="Save" action="{!save}"/>
-      </apex:pageBlockButtons>
-      <apex:pageBlockTable value="{!users}" var="u">
-        <apex:column value="{!u.Name}"/>
-        <apex:column headerValue="SaleMove Token">
-            <apex:inputField value="{!u.SMToken__c}"/>
-        </apex:column>
-        <apex:column headerValue="SaleMove Site Id" id="_siteId">
-            <apex:inputField html-data="site_id" value="{!u.OmniBrowseSiteID__c}"/>
-        </apex:column>
-        <apex:column headerValue="SaleMove External Id Field Name" id="_externalIdFieldName">
-            <apex:inputField html-data="external_id_field_name" value="{!u.ExternalIDFieldName__c}"/>
-        </apex:column>                       
-      </apex:pageBlockTable>
-      </apex:pageBlock>
-   </apex:form>
-  </apex:pageBlock>   
+       <apex:pageBlock title="Hello {!$User.FirstName}!">
+       OmniBrowse Site ID.
+       <p/>
+       <apex:inputField id="OBSite" html-size="36" value="{!user.OmniBrowseSiteID__c}"/>
+       <p/>
+       <apex:commandButton onclick="setSiteIds('{!$Component.OBSite}'); return false;" value="Set Site ID" id="setSiteId" />
+       <p/>
+       <apex:inputField id="OBExternalIDFieldName" html-size="36" value="{!user.ExternalIDFieldName__c}"/>
+       <p/>
+       <apex:commandButton onclick="setExternalIDFieldName('{!$Component.OBExternalIDFieldName}'); return false;" value="Set External ID Field Name" id="setExternalIDFieldName" />
+       <p/>
+       <apex:inputField id="OBModelName" html-size="36" value="{!user.ExternalIDFieldName__c}"/>
+       <p/>
+       <apex:commandButton onclick="setOmniBrowseModelName('{!$Component.OBModelName}'); return false;" value="Set Model Name" id="setModelName" />
+       </apex:pageBlock>
+    </apex:form>
+
+
+   <apex:pageBlock title="Operators' Configurations">
+     <apex:form >
+        <apex:pageBlock >
+        <apex:pageMessages />
+        <apex:pageMessage summary="Number of Operators: {!NumerOfOperators}" severity="info" />
+        <apex:pageBlockButtons >
+        <apex:commandButton value="Save" action="{!save}"/>
+        </apex:pageBlockButtons>
+        <apex:pageBlockTable value="{!users}" var="u" rows="1000">
+            <apex:column value="{!u.Name}"/>
+            <apex:column headerValue="SaleMove Token">
+                <apex:inputField value="{!u.SMToken__c}"/>
+            </apex:column>
+            <apex:column headerValue="SaleMove Site Id" id="_siteId">
+                <apex:inputField html-data="site_id" value="{!u.OmniBrowseSiteID__c}"/>
+            </apex:column>
+            <apex:column headerValue="SaleMove External Id Field Name" id="_externalIdFieldName">
+                <apex:inputField html-data="external_id_field_name" value="{!u.ExternalIDFieldName__c}"/>
+            </apex:column>
+            <apex:column headerValue="OmniBrowse Model Name" id="_omnibrowseModelName">
+                <apex:inputField html-data="omnibrowse_model_name" value="{!u.OmniBrowse_Model__c}"/>
+            </apex:column>
+        </apex:pageBlockTable>
+
+        </apex:pageBlock>
+     </apex:form>
+    </apex:pageBlock>
 </apex:page>
