@@ -4,7 +4,7 @@ private class TestOmniBrowseControllerExtension {
   static testMethod void testGetExternalIdValueWhenEmail(){
     final String contactEmail='test@omnibrowse.com';
     final String contactLastName = 'LastName';
-    
+
     User user = new User(
       ProfileId = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1].Id,
       LastName = 'Last',
@@ -61,7 +61,7 @@ private class TestOmniBrowseControllerExtension {
       Contact contact = new Contact(Email=contactEmail, LastName=contactLastName);
       insert contact;
       Test.startTest();
-      
+
       ApexPages.StandardController contactController = new ApexPages.StandardController(contact);
       OmniBrowseControllerExtension obExtension = new OmniBrowseControllerExtension(contactController);
       ApexPages.currentPage().getParameters().put('id', contact.id);
