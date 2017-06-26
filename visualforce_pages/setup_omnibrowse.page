@@ -1,48 +1,76 @@
 <apex:page standardController="User" recordSetVar="users" extensions="OmniBrowseSetupExtension">
-    <script>
-      function setSiteIds(obSiteElementId){
+  <script>
+    function setSiteIds(obSiteElementId){
         var obSite = document.getElementById(obSiteElementId);
         var elements = document.querySelectorAll('[data=site_id]')
         Array.from(elements).map(function(v){
             v.value = obSite.value;
        });
-      }
+    }
 
-      function setExternalIDFieldName(obExternalIDFieldNameID){
+    function setExternalIDFieldName(obExternalIDFieldNameID){
         var obExternalIdFieldName = document.getElementById(obExternalIDFieldNameID);
         var elements = document.querySelectorAll('[data=external_id_field_name]')
         Array.from(elements).map(function(v){
             v.value = obExternalIdFieldName.value;
        });
-      }
+    }
 
-      function setOmniBrowseModelName(omniBrowseModelNameId){
+    function setOmniBrowseModelName(omniBrowseModelNameId){
         var omnibrowseModelNameInput = document.getElementById(omniBrowseModelNameId);
         var elements = document.querySelectorAll('[data=omnibrowse_model_name]')
         Array.from(elements).map(function(v){
             v.value = omnibrowseModelNameInput.value;
        });
-      }
-    </script>
+    }
+  </script>
 
-    <apex:form >
-       <apex:pageBlock title="Hello {!$User.FirstName}!">
-       OmniBrowse Site ID.
-       <p/>
-       <apex:inputField id="OBSite" html-size="36" value="{!user.OmniBrowseSiteID__c}"/>
-       <p/>
-       <apex:commandButton onclick="setSiteIds('{!$Component.OBSite}'); return false;" value="Set Site ID" id="setSiteId" />
-       <p/>
-       <apex:inputField id="OBExternalIDFieldName" html-size="36" value="{!user.ExternalIDFieldName__c}"/>
-       <p/>
-       <apex:commandButton onclick="setExternalIDFieldName('{!$Component.OBExternalIDFieldName}'); return false;" value="Set External ID Field Name" id="setExternalIDFieldName" />
-       <p/>
-       <apex:inputField id="OBModelName" html-size="36" value="{!user.ExternalIDFieldName__c}"/>
-       <p/>
-       <apex:commandButton onclick="setOmniBrowseModelName('{!$Component.OBModelName}'); return false;" value="Set Model Name" id="setModelName" />
-       </apex:pageBlock>
-    </apex:form>
+  <apex:form >
+    <apex:pageBlock title="Hello {!$User.FirstName}!">
+      <style>
+        .sm-table {
+          display: -webkit-box;
+          display: -ms-flexbox;
+          display: flex;
+          -ms-flex-wrap: wrap;
+              flex-wrap: wrap;
+          margin: 0 0 3em 0;
+          padding: 0;
+        }
+        .sm-table-cell {
+          box-sizing: border-box;
+          -webkit-box-flex: 1;
+              -ms-flex-positive: 1;
+                  flex-grow: 1;
+          width: 100%;
+          padding: 0.8em 1.2em;
+          overflow: hidden;
+          list-style: none;
+          border: solid 2px white;
+           > h1, > h2, > h3, > h4, > h5, > h6 { margin: 0; }
+        }
+        .sm-table--3cols > .sm-table-cell  { width: 33.33%; }
+      </style>
+      <div class="sm-table sm-table--3cols">
+        <div class="sm-table-cell"> <h3>OmniBrowse Site ID</h3> </div>
+        <div class="sm-table-cell"> <apex:inputField id="OBSite" html-size="36" value="{!user.OmniBrowseSiteID__c}"/> </div>
+        <div class="sm-table-cell"> <apex:commandButton onclick="setSiteIds('{!$Component.OBSite}'); return false;" value="Set Site ID for All Operators" id="setSiteId" /> </div>
 
+        <div class="sm-table-cell"> <h3> OmniBrowse External Id Field Name </h3></div>
+        <div class="sm-table-cell"> <apex:inputField id="OBExternalIDFieldName" html-size="36" value="{!user.ExternalIDFieldName__c}"/> </div>
+        <div class="sm-table-cell"> <apex:commandButton onclick="setExternalIDFieldName('{!$Component.OBExternalIDFieldName}'); return false;" value="Set External ID Field Name" id="setExternalIDFieldName" /> </div>
+
+        <div class="sm-table-cell"> <h3> OmniBrowse Model Name </h3></div>
+        <div class="sm-table-cell">
+          <select id="OBModelName">
+            <option value="Lead">Lead</option>
+            <option value="Contact">Contact</option>
+          </select>
+        </div>
+        <div class="sm-table-cell"> <apex:commandButton onclick="setOmniBrowseModelName('OBModelName'); return false;" value="Set Model Name to All Operators" id="setModelName" /> </div>
+      </div>
+    </apex:pageBlock>
+  </apex:form>
 
    <apex:pageBlock title="Operators' Configurations">
      <apex:form >
@@ -67,7 +95,6 @@
                 <apex:inputField html-data="omnibrowse_model_name" value="{!u.OmniBrowse_Model__c}"/>
             </apex:column>
         </apex:pageBlockTable>
-
         </apex:pageBlock>
      </apex:form>
     </apex:pageBlock>

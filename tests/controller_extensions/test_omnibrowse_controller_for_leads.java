@@ -78,5 +78,4 @@ private class TestOmniBrowseControllerForLeads {
     }
     Test.stopTest();
   }
-
 }

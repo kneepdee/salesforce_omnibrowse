@@ -4,6 +4,7 @@ private class TestOmniBrowseControllerExtension {
   static testMethod void testGetExternalIdValueWhenEmail(){
     final String contactEmail='test@omnibrowse.com';
     final String contactLastName = 'LastName';
+    final String modelName = 'Contact';
 
     User user = new User(
       ProfileId = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1].Id,
@@ -17,7 +18,8 @@ private class TestOmniBrowseControllerExtension {
       EmailEncodingKey = 'UTF-8',
       LanguageLocaleKey = 'en_US',
       LocaleSidKey = 'en_US',
-      ExternalIDFieldName__c = 'Email'
+      ExternalIDFieldName__c = 'Email',
+      OmniBrowse_Model__c = modelName
     );
 
     insert user;
@@ -31,8 +33,9 @@ private class TestOmniBrowseControllerExtension {
       OmniBrowseControllerExtension obExtension = new OmniBrowseControllerExtension(contactController);
       ApexPages.currentPage().getParameters().put('id', contact.id);
       String externalIdValue = obExtension.getExternalIdValue();
+      String omnibrowseModelName = obExtension.getOmniBrowseModelName();
       System.assertEquals(contactEmail, externalIdValue);
-
+      System.assertEquals(omnibrowseModelName, modelName);
     }
     Test.stopTest();
   }
@@ -40,6 +43,7 @@ private class TestOmniBrowseControllerExtension {
   static testMethod void testGetExternalIdValueWhenNotEmail(){
     final String contactEmail='test@omnibrowse.com';
     final String contactLastName = 'LastName';
+    final String modelName = 'Contact';
     User user = new User(
       ProfileId = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1].Id,
       LastName = 'Last',
@@ -52,7 +56,8 @@ private class TestOmniBrowseControllerExtension {
       EmailEncodingKey = 'UTF-8',
       LanguageLocaleKey = 'en_US',
       LocaleSidKey = 'en_US',
-      ExternalIDFieldName__c = 'LastName'
+      ExternalIDFieldName__c = 'LastName',
+      OmniBrowse_Model__c = modelName
     );
 
     insert user;
@@ -62,13 +67,15 @@ private class TestOmniBrowseControllerExtension {
       insert contact;
       Test.startTest();
 
+
       ApexPages.StandardController contactController = new ApexPages.StandardController(contact);
       OmniBrowseControllerExtension obExtension = new OmniBrowseControllerExtension(contactController);
       ApexPages.currentPage().getParameters().put('id', contact.id);
       String externalIdValue = obExtension.getExternalIdValue();
+      String omnibrowseModelName = obExtension.getOmniBrowseModelName();
       System.assertEquals(contactLastName, externalIdValue);
+      System.assertEquals(omnibrowseModelName, modelName);
     }
     Test.stopTest();
   }
-
 }

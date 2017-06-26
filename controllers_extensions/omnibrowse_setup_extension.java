@@ -1,5 +1,5 @@
 public class OmniBrowseSetupExtension {
-  private Integer size;
+  public Integer size;
   ApexPages.StandardSetController setCon;
 
   public OmniBrowseSetupExtension(ApexPages.StandardSetController controller) {
