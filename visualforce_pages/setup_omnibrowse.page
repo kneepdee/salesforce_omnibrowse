@@ -16,6 +16,14 @@
        });
     }
 
+    function setIframeHeight(obIframeHeightID){
+        var obIframeHeight = document.getElementById(obIframeHeightID);
+        var elements = document.querySelectorAll('[data=iframe_height]')
+        Array.from(elements).map(function(v){
+            v.value = obIframeHeight.value;
+       });
+    }
+
     function setOmniBrowseModelName(omniBrowseModelNameId){
         var omnibrowseModelNameInput = document.getElementById(omniBrowseModelNameId);
         var elements = document.querySelectorAll('[data=omnibrowse_model_name]')
@@ -60,6 +68,10 @@
         <div class="sm-table-cell"> <apex:inputField id="OBExternalIDFieldName" html-size="36" value="{!user.ExternalIDFieldName__c}"/> </div>
         <div class="sm-table-cell"> <apex:commandButton onclick="setExternalIDFieldName('{!$Component.OBExternalIDFieldName}'); return false;" value="Set External ID Field Name" id="setExternalIDFieldName" /> </div>
 
+        <div class="sm-table-cell"> <h3> OmniBrowse Component Height (e.g. 1200px, 100%) </h3></div>
+        <div class="sm-table-cell"> <apex:inputField id="OBIframeHeight" html-size="36" value="{!user.OmniBrowseIframeHeigh__c}"/> </div>
+        <div class="sm-table-cell"> <apex:commandButton onclick="setIframeHeight('{!$Component.OBIframeHeight}'); return false;" value="Set Iframe Height" id="setIframeHeight" /> </div>
+
         <div class="sm-table-cell"> <h3> OmniBrowse Model Name </h3></div>
         <div class="sm-table-cell">
           <select id="OBModelName">
@@ -93,6 +105,9 @@
             </apex:column>
             <apex:column headerValue="OmniBrowse Model Name" id="_omnibrowseModelName">
                 <apex:inputField html-data="omnibrowse_model_name" value="{!u.OmniBrowse_Model__c}"/>
+            </apex:column>
+             <apex:column headerValue="OmniBrowse Component Height" id="_omnibrowseIframeHeight">
+                <apex:inputField html-data="iframe_height" value="{!u.OmniBrowseIframeHeigh__c}"/>
             </apex:column>
         </apex:pageBlockTable>
         </apex:pageBlock>
