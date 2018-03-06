@@ -1,4 +1,4 @@
-<apex:page StandardController="Lead" id="thePage" extensions="OmniBrowseControllerExtension" showHeader="false">
+<apex:page StandardController="Contact" id="thePage" extensions="OmniBrowseControllerExtension" showHeader="false">
   <apex:pageBlock title="OmniBrowse by SaleMove">
     </apex:pageBlock>
     <script>

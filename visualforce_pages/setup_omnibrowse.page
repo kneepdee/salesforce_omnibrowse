@@ -1,116 +1,18 @@
-<apex:page standardController="User" recordSetVar="users" extensions="OmniBrowseSetupExtension">
-  <script>
-    function setSiteIds(obSiteElementId){
-        var obSite = document.getElementById(obSiteElementId);
-        var elements = document.querySelectorAll('[data=site_id]')
-        Array.from(elements).map(function(v){
-            v.value = obSite.value;
-       });
-    }
-
-    function setExternalIDFieldName(obExternalIDFieldNameID){
-        var obExternalIdFieldName = document.getElementById(obExternalIDFieldNameID);
-        var elements = document.querySelectorAll('[data=external_id_field_name]')
-        Array.from(elements).map(function(v){
-            v.value = obExternalIdFieldName.value;
-       });
-    }
-
-    function setIframeHeight(obIframeHeightID){
-        var obIframeHeight = document.getElementById(obIframeHeightID);
-        var elements = document.querySelectorAll('[data=iframe_height]')
-        Array.from(elements).map(function(v){
-            v.value = obIframeHeight.value;
-       });
-    }
-
-    function setOmniBrowseModelName(omniBrowseModelNameId){
-        var omnibrowseModelNameInput = document.getElementById(omniBrowseModelNameId);
-        var elements = document.querySelectorAll('[data=omnibrowse_model_name]')
-        Array.from(elements).map(function(v){
-            v.value = omnibrowseModelNameInput.value;
-       });
-    }
-  </script>
-
+<apex:page standardController="OmniBrowseConfiguration__c">
   <apex:form >
-    <apex:pageBlock title="Hello {!$User.FirstName}!">
-      <style>
-        .sm-table {
-          display: -webkit-box;
-          display: -ms-flexbox;
-          display: flex;
-          -ms-flex-wrap: wrap;
-              flex-wrap: wrap;
-          margin: 0 0 3em 0;
-          padding: 0;
-        }
-        .sm-table-cell {
-          box-sizing: border-box;
-          -webkit-box-flex: 1;
-              -ms-flex-positive: 1;
-                  flex-grow: 1;
-          width: 100%;
-          padding: 0.8em 1.2em;
-          overflow: hidden;
-          list-style: none;
-          border: solid 2px white;
-           > h1, > h2, > h3, > h4, > h5, > h6 { margin: 0; }
-        }
-        .sm-table--3cols > .sm-table-cell  { width: 33.33%; }
-      </style>
-      <div class="sm-table sm-table--3cols">
-        <div class="sm-table-cell"> <h3>OmniBrowse Site ID</h3> </div>
-        <div class="sm-table-cell"> <apex:inputField id="OBSite" html-size="36" value="{!user.OmniBrowseSiteID__c}"/> </div>
-        <div class="sm-table-cell"> <apex:commandButton onclick="setSiteIds('{!$Component.OBSite}'); return false;" value="Set Site ID for All Operators" id="setSiteId" /> </div>
-
-        <div class="sm-table-cell"> <h3> OmniBrowse External Id Field Name </h3></div>
-        <div class="sm-table-cell"> <apex:inputField id="OBExternalIDFieldName" html-size="36" value="{!user.ExternalIDFieldName__c}"/> </div>
-        <div class="sm-table-cell"> <apex:commandButton onclick="setExternalIDFieldName('{!$Component.OBExternalIDFieldName}'); return false;" value="Set External ID Field Name" id="setExternalIDFieldName" /> </div>
-
-        <div class="sm-table-cell"> <h3> OmniBrowse Component Height (e.g. 1200px, 100%) </h3></div>
-        <div class="sm-table-cell"> <apex:inputField id="OBIframeHeight" html-size="36" value="{!user.OmniBrowseIframeHeigh__c}"/> </div>
-        <div class="sm-table-cell"> <apex:commandButton onclick="setIframeHeight('{!$Component.OBIframeHeight}'); return false;" value="Set Iframe Height" id="setIframeHeight" /> </div>
-
-        <div class="sm-table-cell"> <h3> OmniBrowse Model Name </h3></div>
-        <div class="sm-table-cell">
-          <select id="OBModelName">
-            <option value="Lead">Lead</option>
-            <option value="Contact">Contact</option>
-          </select>
-        </div>
-        <div class="sm-table-cell"> <apex:commandButton onclick="setOmniBrowseModelName('OBModelName'); return false;" value="Set Model Name to All Operators" id="setModelName" /> </div>
-      </div>
+    <apex:pageBlock title="New OmniBrowse Configuration" mode="edit">
+    <apex:pageBlockButtons >
+    <apex:commandButton action="{!save}" value="Save"/>
+    </apex:pageBlockButtons>
+    <apex:pageBlockSection title="Configuration Details" columns="2">
+      <apex:inputField value="{!OmniBrowseConfiguration__c.SiteId__c}"/>
+      <apex:inputField value="{!OmniBrowseConfiguration__c.ApiToken__c}"/>
+      <apex:inputField value="{!OmniBrowseConfiguration__c.AppToken__c}"/>
+      <apex:inputField value="{!OmniBrowseConfiguration__c.ExternalIDFieldName__c}"/>
+      <apex:inputField value="{!OmniBrowseConfiguration__c.ComponentHeight__c}"/>
+      <apex:inputField value="{!OmniBrowseConfiguration__c.ModelName__c}"/>
+      <apex:inputField value="{!OmniBrowseConfiguration__c.Active__c}"/>
+    </apex:pageBlockSection>
     </apex:pageBlock>
   </apex:form>
-
-   <apex:pageBlock title="Operators' Configurations">
-     <apex:form >
-        <apex:pageBlock >
-        <apex:pageMessages />
-        <apex:pageMessage summary="Number of Operators: {!NumerOfOperators}" severity="info" />
-        <apex:pageBlockButtons >
-        <apex:commandButton value="Save" action="{!save}"/>
-        </apex:pageBlockButtons>
-        <apex:pageBlockTable value="{!users}" var="u" rows="1000">
-            <apex:column value="{!u.Name}"/>
-            <apex:column headerValue="SaleMove Token">
-                <apex:inputField value="{!u.SMToken__c}"/>
-            </apex:column>
-            <apex:column headerValue="SaleMove Site Id" id="_siteId">
-                <apex:inputField html-data="site_id" value="{!u.OmniBrowseSiteID__c}"/>
-            </apex:column>
-            <apex:column headerValue="SaleMove External Id Field Name" id="_externalIdFieldName">
-                <apex:inputField html-data="external_id_field_name" value="{!u.ExternalIDFieldName__c}"/>
-            </apex:column>
-            <apex:column headerValue="OmniBrowse Model Name" id="_omnibrowseModelName">
-                <apex:inputField html-data="omnibrowse_model_name" value="{!u.OmniBrowse_Model__c}"/>
-            </apex:column>
-             <apex:column headerValue="OmniBrowse Component Height" id="_omnibrowseIframeHeight">
-                <apex:inputField html-data="iframe_height" value="{!u.OmniBrowseIframeHeigh__c}"/>
-            </apex:column>
-        </apex:pageBlockTable>
-        </apex:pageBlock>
-     </apex:form>
-    </apex:pageBlock>
 </apex:page>
