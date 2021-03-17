@@ -1,0 +1,15 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" controller="LgtnOmniBrowseController">
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>    
+    <aura:attribute name="ExternalId" type="String" default="NA"/>
+    <aura:attribute name="SiteId" type="String" default="world"/>
+    <aura:attribute name="AppToken" type="String" default="world"/>
+    <aura:attribute name="OperatorId" type="String" default="world"/>
+    <aura:attribute name="ApiToken" type="String" default="world"/>
+    <aura:attribute name="ApiEndpoint" type="String" default="world"/>
+    <aura:attribute name="OmniBrowseEndpoint" type="String" default="world"/>
+    <aura:attribute name="MobileiOSOpeninNewTab" type="String" default="world"/>
+    <aura:attribute name="ModelName" type="String" default="world"/>
+    <aura:attribute name="LaunchUrl" type="String" default=""/>
+    <iframe src="" scrolling="true" id="obIframe" height="1200px" width="100%" 
+            html-sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-pointer-lock allow-top-navigation" allow="camera; microphone"/>
+</aura:component>
