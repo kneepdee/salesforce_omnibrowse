@@ -13,7 +13,9 @@
         cmp.set("v.ExternalId", omniBrowseConfiguration.externalId);
         cmp.set("v.SiteId", omniBrowseConfiguration.siteId);
         cmp.set("v.ApiToken", omniBrowseConfiguration.apiToken);
-        cmp.set("v.AppToken", omniBrowseConfiguration.siteToken);
+        cmp.set("v.SiteApiKeyId", omniBrowseConfiguration.siteApiKeyId);
+        cmp.set("v.SiteApiKeySecret", omniBrowseConfiguration.siteApiKeySecret);
+        cmp.set("v.GliaApiUrl", omniBrowseConfiguration.gliaApiUrl);
         cmp.set("v.OperatorId", omniBrowseConfiguration.operatorId);
         cmp.set("v.ApiEndpoint", omniBrowseConfiguration.apiEndpoint);
         cmp.set("v.OmniBrowseEndpoint", omniBrowseConfiguration.omnibrowseEndpoint);
@@ -40,7 +42,9 @@
   readCredentials: function(cmp){
     return {
      apiToken: cmp.get('v.ApiToken'),
-     appToken: cmp.get('v.AppToken'),
+     siteApiKeyId: cmp.get('v.SiteApiKeyId'),
+     siteApiKeySecret: cmp.get('v.SiteApiKeySecret'),
+     gliaApiUrl: cmp.get('v.GliaApiUrl'),
      siteId: cmp.get('v.SiteId'),
      operatorId: cmp.get('v.OperatorId'),
      omnibrowseEndpoint: cmp.get('v.OmniBrowseEndpoint'),
@@ -63,28 +67,53 @@
   },
 
   acquireLaunchToken: function(credentials) {
-    const omnibrowseEndpoint = credentials.omnibrowseEndpoint;
-    const appToken = credentials.appToken;
-    const operatorId = credentials.operatorId;
-    const url = `${omnibrowseEndpoint}/auth/token`;
+    return acquireSiteBearerToken(
+      credentials.siteApiKeyId,
+      credentials.siteApiKeySecret,
+      credentials.gliaApiUrl
+    ).then(response => {
+      const siteBearerToken = response.access_token
 
-    const data = new FormData();
-    data.append('app_token', appToken);
-    data.append('operator_id', operatorId);
-    const options = {
+      const omnibrowseEndpoint = credentials.omnibrowseEndpoint;
+      const operatorId = credentials.operatorId;
+      const url = `${omnibrowseEndpoint}/auth/token`;
+      const data = new FormData();
+      data.append('operator_id', operatorId);
+      const options = {
+        headers: {
+          'Accept': 'application/vnd.salemove.v1+json',
+          'Authorization': `Bearer ${siteBearerToken}`,
+        },
+        mode: 'cors',
+        body: data,
+        method: 'POST'
+      }
+
+      return fetch(url, options)
+      .then(this.status)
+      .then(this.json)
+      .then(function(res){
+        const response = {launchToken: res.launch_token};
+        return Promise.resolve(Object.assign({}, credentials, response));
+      });
+    });
+  },
+
+  acquireSiteBearerToken: function(siteApiKeyId, siteApiKeySecret, gliaApiUrl) {
+    const url = `${gliaApiUrl}/sites/tokens`;
+    const data = {
+      "api_key_secret": `${siteApiKeySecret}`,
+      "api_key_id": `${siteApiKeyId}`
+    };
+    return fetch(url, {
+      method: 'POST',
       headers: {
+        'Content-Type': 'application/json',
         'Accept': 'application/vnd.salemove.v1+json'
       },
-      mode: 'cors',
-      body: data,
-      method: 'POST'
-    }
-    return fetch(url, options)
-    .then(this.status)
-    .then(this.json)
-    .then(function(res){
-      const response = {launchToken: res.launch_token};
-      return Promise.resolve(Object.assign({}, credentials, response));
+      body: JSON.stringify(data)
+    }).then(response => {
+      return Promise.resolve(response.json())
     });
   },
 
