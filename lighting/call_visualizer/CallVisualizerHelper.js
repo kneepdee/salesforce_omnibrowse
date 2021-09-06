@@ -12,7 +12,6 @@
         cmp.set("v.MobileiOSOpeninNewTab", omniBrowseConfiguration.iOSOpenInNewTab);
         cmp.set("v.ExternalId", omniBrowseConfiguration.externalId);
         cmp.set("v.SiteId", omniBrowseConfiguration.siteId);
-        cmp.set("v.ApiToken", omniBrowseConfiguration.apiToken);
         cmp.set("v.SiteApiKeyId", omniBrowseConfiguration.siteApiKeyId);
         cmp.set("v.SiteApiKeySecret", omniBrowseConfiguration.siteApiKeySecret);
         cmp.set("v.GliaApiUrl", omniBrowseConfiguration.gliaApiUrl);
@@ -41,7 +40,6 @@
 
   readCredentials: function(cmp){
     return {
-     apiToken: cmp.get('v.ApiToken'),
      siteApiKeyId: cmp.get('v.SiteApiKeyId'),
      siteApiKeySecret: cmp.get('v.SiteApiKeySecret'),
      gliaApiUrl: cmp.get('v.GliaApiUrl'),
@@ -118,25 +116,33 @@
   },
 
   isVisitorOnlineByExternalId: function(credentials){
-    const externalId = credentials.externalId;
-    const omnibrowseEndpoint = credentials.omnibrowseEndpoint;
-    const url = `${omnibrowseEndpoint}/sites/${credentials.siteId}/visitors?external_id=${externalId}`;
-    const options = {
-      headers: {
-        'Authorization': `Token ${credentials.apiToken}`,
-        'Accept': 'application/vnd.salemove.v1+json',
-        'Content-type': 'application/x-www-form-urlencoded'
-      },
-      mode: 'cors',
-      method: 'GET'
-    };
-	
-    return fetch(url, options)
-    .then(this.status)
-    .then(this.json)
-    .then(function(res){
-      const response = {isVisitorOnline: res.length};
-	  return Promise.resolve(Object.assign({}, credentials, response));    
+    return acquireSiteBearerToken(
+      credentials.siteApiKeyId,
+      credentials.siteApiKeySecret,
+      credentials.gliaApiUrl
+    ).then(response => {
+      const siteBearerToken = response.access_token
+
+      const externalId = credentials.externalId;
+      const omnibrowseEndpoint = credentials.omnibrowseEndpoint;
+      const url = `${omnibrowseEndpoint}/sites/${credentials.siteId}/visitors?external_id=${externalId}`;
+      const options = {
+        headers: {
+          'Authorization': `Bearer ${siteBearerToken}`,
+          'Accept': 'application/vnd.salemove.v1+json',
+          'Content-type': 'application/x-www-form-urlencoded'
+        },
+        mode: 'cors',
+        method: 'GET'
+      };
+
+      return fetch(url, options)
+      .then(this.status)
+      .then(this.json)
+      .then(function(res){
+        const response = {isVisitorOnline: res.length};
+      return Promise.resolve(Object.assign({}, credentials, response));
+      })
     })
   },
 
